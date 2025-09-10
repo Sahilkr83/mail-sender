@@ -25,7 +25,7 @@ def upload():
         img = Image.open(io.BytesIO(file.read()))
 
         # Downscale very large images (helps prevent Render timeout/memory crash)
-        max_size = (2000, 2000)  # adjust if needed
+        max_size = (100, 100)  # adjust if needed
         img.thumbnail(max_size, Image.LANCZOS)
 
         # OCR with pytesseract
