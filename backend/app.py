@@ -6,7 +6,7 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,  origins=["https://mail-sender-1.netlify.app"])
 
 # On Linux, tesseract is usually in PATH, no need for Windows path
 # Uncomment if custom path needed
