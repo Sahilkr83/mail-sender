@@ -1,8 +1,11 @@
 services:
   - type: web
-    name: mail-sender-backend
+    name: mail-sender
     env: python
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "gunicorn backend.app:app --bind 0.0.0.0:$PORT"
-    systemPackages:
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:10000 backend.app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
+    packages:
       - tesseract-ocr
