@@ -1,1 +1,8 @@
-apt-get update && apt-get install -y tesseract-ocr
+services:
+  - type: web
+    name: mail-sender-backend
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "gunicorn backend.app:app --bind 0.0.0.0:$PORT"
+    systemPackages:
+      - tesseract-ocr

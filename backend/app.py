@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pytesseract
@@ -5,10 +6,11 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
-CORS(app)  # allow requests from frontend
+CORS(app)
 
-# If Windows, set the tesseract path:
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# On Linux, tesseract is usually in PATH, no need for Windows path
+# Uncomment if custom path needed
+# pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -16,10 +18,13 @@ def upload():
         return jsonify({"error": "No file uploaded"}), 400
 
     file = request.files["image"]
-    img = Image.open(io.BytesIO(file.read()))
-    text = pytesseract.image_to_string(img)  # Extract text
-    return jsonify({"text": text})
+    try:
+        img = Image.open(io.BytesIO(file.read()))
+        text = pytesseract.image_to_string(img)
+        return jsonify({"text": text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
