@@ -8,11 +8,12 @@ from PIL import Image
 
 app = Flask(__name__)
 
-# Allow only your Netlify frontend
-CORS(app, resources={r"/*": {"origins": "https://mail-sender-1.netlify.app"}})
+# Allow frontend running at localhost:3000
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-# Uncomment if Render needs custom Tesseract path
-# pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
+# If Tesseract is not in PATH, set path manually (example for Windows)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -24,8 +25,8 @@ def upload():
         # Open image
         img = Image.open(io.BytesIO(file.read()))
 
-        # Downscale very large images (helps prevent Render timeout/memory crash)
-        max_size = (100, 100)  # adjust if needed
+        # Downscale very large images to avoid memory/time issues
+        max_size = (2000, 2000)  # keep text readable
         img.thumbnail(max_size, Image.LANCZOS)
 
         # OCR with pytesseract
@@ -50,6 +51,5 @@ def check_tesseract():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    # Gunicorn in Render will override this, but works locally too
-    app.run(host="0.0.0.0", port=port, debug=False)
+    # Run locally on port 5000
+    app.run(host="0.0.0.0", port=5000, debug=True)
